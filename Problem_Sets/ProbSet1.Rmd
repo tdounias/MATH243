@@ -35,25 +35,28 @@ c) Regression since we are predicting a clearly arithmetic value. We are interes
 **4**
   
 a) 
-i) We want to analyze the factors that contribute to alcoholism. This would be an example of inference. The response is whether a person is an alcoholic or not, and predictors might include upbringing and related events, community, income, race, gender etc.
+
+1) We want to analyze the factors that contribute to alcoholism. This would be an example of inference. The response is whether a person is an alcoholic or not, and predictors might include upbringing and related events, community, income, race, gender etc.
   
-ii) We want to model the conductivity of a diode at different voltages and temperatures. The diode either conducts, or does not, making it an instance of classification. The response is conductivity, predictors include temperature, voltage, materials used, error terms and experimental circumstances etc.
+2) We want to model the conductivity of a diode at different voltages and temperatures. The diode either conducts, or does not, making it an instance of classification. The response is conductivity, predictors include temperature, voltage, materials used, error terms and experimental circumstances etc.
   
-iii) We want to understand the impact of news consumption on voting tendencies. The goal is inferences, the response is each person's vote, and predictors might include how much news a person consumes, where they get it from, how often they do so, etc.
+3) We want to understand the impact of news consumption on voting tendencies. The goal is inferences, the response is each person's vote, and predictors might include how much news a person consumes, where they get it from, how often they do so, etc.
    
 b) 
-i) We want to predict the change in an athlete's performance after the administration of a particular drug. This is mostly predictive, but we could have use for inference methods if we want to see how/why the drug had its effects. The response is the numerical change in the athlete's performance, and the predictors are whether they are in a control group, diet, body mass and physical characteristics, gender etc.
+
+1) We want to predict the change in an athlete's performance after the administration of a particular drug. This is mostly predictive, but we could have use for inference methods if we want to see how/why the drug had its effects. The response is the numerical change in the athlete's performance, and the predictors are whether they are in a control group, diet, body mass and physical characteristics, gender etc.
   
-ii) We want to model the body mass of farmed fish. This would have inference as its goal in order to optimize farming practices. The response is the fishes' body mass, the predictors would be fish type, environment, genetic characteristics, types of feed, seasonal characteristics etc.
+2) We want to model the body mass of farmed fish. This would have inference as its goal in order to optimize farming practices. The response is the fishes' body mass, the predictors would be fish type, environment, genetic characteristics, types of feed, seasonal characteristics etc.
   
-iii) We want to predict the price of a certain stock in the long run. This is a predictive model entirely, since all that matters for whether we invest or not is the stock's level. Response is the price in USD, predictors might be exchange rates, general economic variables, type of services the company provides, stock levels of competitors etc.
+3) We want to predict the price of a certain stock in the long run. This is a predictive model entirely, since all that matters for whether we invest or not is the stock's level. Response is the price in USD, predictors might be exchange rates, general economic variables, type of services the company provides, stock levels of competitors etc.
     
 c) 
-i) We want to predict the race of a voter in a specific area, in order to model voting on racial lines. The group is race, predictors are neighborhood, education, income, social media data etc. The goal is prediction, since we are using data we already know is regrettably correlated to race in order to predict it.
+
+1) We want to predict the race of a voter in a specific area, in order to model voting on racial lines. The group is race, predictors are neighborhood, education, income, social media data etc. The goal is prediction, since we are using data we already know is regrettably correlated to race in order to predict it.
   
-ii) Hogwarts sorting hat uses a classification model for prediction purposes. The grouping is one of the four houses, predictors include social status, psychological profile (in quantitative variable form), personal preferences etc.
+2) Hogwarts sorting hat uses a classification model for prediction purposes. The grouping is one of the four houses, predictors include social status, psychological profile (in quantitative variable form), personal preferences etc.
   
-iii) The manager of Liverpool wants to create a list of football players to fill a midfielder position, and wants to submit a proposal that includes four tiers of candidates based on his preference. He would use classification based on different predictors for each player to divide them into groups.
+3) The manager of Liverpool wants to create a list of football players to fill a midfielder position, and wants to submit a proposal that includes four tiers of candidates based on his preference. He would use classification based on different predictors for each player to divide them into groups.
   
    
     
