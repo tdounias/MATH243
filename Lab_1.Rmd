@@ -1,0 +1,74 @@
+---
+title: "Lab 1 -- MATH 243"
+author: "Theodore Dounias"
+date: "September 6, 2017"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(MASS)
+library(tidyverse)
+```
+
+**1**
+  
+```{r}
+dim(Boston)
+```
+    
+We have 506 different towns near Boston, for which we have collected data over 13 variables.
+    
+**2**
+   
+```{r}
+ggplot(Boston, aes(x = rm, y = medv)) +
+  geom_point()
+
+ggplot(Boston, aes(x = crim, y = medv)) +
+  geom_point()
+
+ggplot(Boston, aes(x = dis, y = medv)) +
+  geom_point()
+```
+   
+First plot is Median Value by Room Number, and is exactly what we would expect--more rooms add to the value of the house.
+   
+Second plot similarly shows how median value drops according to higher crime rate, but since most areas have a relativelly similarly low crime rate we cannot exactly say that it s a great predictor for median value.
+     
+Third plot is meadian value by distance to Boston. While initially there is an upward trend, this effect wares off at larger distances.
+   
+**3**
+
+Several are, although I would hesitate to call them "predictors" for higher crime rate rather than variables that happen to be correlated. Predictors imply a relationship from one to the other, which is probably not true in terms of, for example, housing values. Anyway, some relationships--after running several scatterplots which are omitted here--:
+   
+River areas(chas) tend to have a consistently lower crime rate. There are fewer zoned lands over 25k sq.ft (zn) in high crime areas. Most areas with comparably higher crime rates are distributed between .6 and .8 in the nox variable. High crime areas tend to have older buildings(age). Higher distance from employment centers(dis), and lower lstat(whatever that is) are related lo lower crime rates in a slightly weak linear fashion. Medv was discussed in the previous question. The rest are omitted either because they do not seem to have such strond a trend, or because they are linked to the ones presented here.
+   
+**4**
+    
+We can run the summary() function to comment on the results.
+```{r}
+summary(Boston)
+```
+  
+Dummy variables obviously are not represented perfectly, since they only take two distinct values. For the rest, Crime Rate, Zoning, distance to employment centers, accessibility to highways, lstat, and median value all seem to have significant jumps in their highest quintile. All except distance to employment centers also have a particularly low bottom quintile compared to the other quintiles.
+    
+**5**
+   
+We can use dplyr for this:
+```{r}
+Boston5 <- Boston %>%
+  filter(chas == 1)
+
+nrow(Boston5)
+```
+  
+The resulting number is the number of cities on the river.
+   
+**6**
+   
+We get this from the summary, and it is equal to 19.05.
+    
+**7**
+    
+My output would be the medv variable. My input would be all other 13 variables in ths dataset. Obviously, in the process of actually constructing the model I would probably find that some of the variables are actually not that useful for a variety of reasons, and would subsequently drop them.
