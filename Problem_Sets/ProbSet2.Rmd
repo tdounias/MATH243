@@ -2,7 +2,7 @@
 title: "Problem Set 2 -- MATH 243"
 author: "Theodore Dounias"
 date: "September 7, 2017"
-output: pdf_document
+output: github_document
 ---
 
 ```{r setup, include=FALSE}
