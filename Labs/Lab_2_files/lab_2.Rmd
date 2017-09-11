@@ -1,0 +1,89 @@
+---
+title: "Lab 2 -- MATH 243"
+author: "Theodore Dounias"
+date: "September 11, 2017"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+data(quakes)
+library(tidyverse)
+```
+#### Earthquake Detection 
+   
+   
+**1**
+  
+
+```{r}
+
+#Using ggplot
+ggplot(quakes, aes(x = stations, y = mag)) +
+  geom_jitter(alpha = .35, colour = "blue")
+```
+   
+I would characterize this relationship as fairly linear, with maybe a slight cubic element to it.
+      
+**2**
+   
+If there was no relationship, I would expect the slope to be zero, and the intercept to be some constant number, which if using the model described in (3.4) in our textbook would be equal to the sample response mean.
+    
+**3**
+   
+```{r}
+m1 <- lm(mag~stations, data = quakes)
+summary(m1)
+```
+   
+We reject the null hypothesis of no relation based on the p-values we have here. Based on this summary, we conclude that an earthquake of magnitude equal to the intercept (~4.097) would not be reported by any station. For each new station reporting, we expect the earthquake to be of a magnitude .016 more severe. 
+   
+**4**
+   
+```{r}
+#Using model in (3.4)
+attach(quakes)
+b1 <- sum((stations - mean(stations))*(mag - mean(mag)))/sum((stations - mean(stations))^2)
+b1
+```
+    
+**5**
+   
+```{r}
+#Predicted conf_int
+cf_b1 <- c(summary(m1)$coefficients[2, 1] - 2*summary(m1)$coefficients[2, 2], 
+           summary(m1)$coefficients[2, 1] + 2*summary(m1)$coefficients[2, 2])
+cf_b1
+
+#Confidence interval
+confint(m1)
+```
+   
+**6**
+    
+```{r}
+
+#We are trying to find x for y = 7
+st_mag7 <- (7 - summary(m1)$coefficients[1, 1])/summary(m1)$coefficients[2, 1]
+st_mag7
+```
+     
+**7**
+    
+Almost all of the questions, save for 6, involve some sort of inference, i.e. calculation or interpretation of parameters describing a population. Questions 1 and 3 ask us to use some tools to describe a dataset. Questions 2 and 6 ask us to predict some values (although 2 is much more about inference than prediction in the way it is interpreted in ISLR).
+    
+    
+#### Simulation
+   
+**9**
+   
+```{r}
+x <- quakes$stations
+```
+    
+**10**
+   
+```{r}
+
+```
+
