@@ -78,12 +78,35 @@ Almost all of the questions, save for 6, involve some sort of inference, i.e. ca
 **9**
    
 ```{r}
-x <- quakes$stations
+x <- as.numeric(quakes$stations)
 ```
     
 **10**
    
 ```{r}
+f_hat <- function(x) {
+  summary(m1)$coefficients[1, 1] + x*summary(m1)$coefficients[2, 1]
+}
 
+f_mean <- f_hat(x)
 ```
+   
+**11**
+    
+```{r}
+sigma <- sum((m1$res)^2)/(length(x) - 2)
 
+f_data <- f_mean + rnorm(length(x), mean = 0, sd = sigma)
+```
+     
+**12**
+   
+```{r}
+df_sim <- data.frame(x, f_data, quakes$mag)
+
+ggplot(df_sim, aes(x, f_data)) +
+  geom_point(alpha = .25) +
+  geom_point(aes(x, quakes$mag), col = "blue", alpha = .25)
+```
+   
+The simulated data is shown in black. The actual data we had is shown in blue. The simulated data seems to be far more concentrated around the linear path that we used to generate them, but seems to be following the same trajectory overall, and has the same concentration along the x-axis. The fact that it is more concentrated along the line means that the data collected was subject to some sort of error that goes beyond the irreducible error as calculated. To compensate we might need to find some way to add a term representing some error in data collection.
