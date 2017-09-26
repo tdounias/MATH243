@@ -1,0 +1,71 @@
+---
+title: "Problem Set 4 -- MATH 243"
+author: "Theodore Dounias"
+date: "September 25, 2017"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+```
+
+####Exercises 6.2(a, b), 6.3, 6.4, 6.6
+
+**6.2(a, b)**
+   
+a) c
+b) c
+  
+Both ridge regression and lasso are less flexible models than least squares regression. This means that they work best in situations where least squares has issues with variance, since the rigidity of the models compensates for that while making minimal tradeoffs in bias. 
+   
+**6.3**
+   
+a) iv) Based on figure 6.7, as we increase s, we increase the area of the constraint function, and include a contour of RSS that is closer to $\hat\beta$, therefore RSS steadily decreases.
+   
+b) ii) If we initially increase flexibility, by increasing x, the test RSS will decrease until an optimal point, after which it will start increasing due to the model being too flexible.
+
+c) iii) Similarly to a, b, the model variance increases due to the increase in flexibility caused by a larger budget.
+   
+d) iv) Bias decreases as the model becomes more flexible.
+   
+e) v) This is always constant
+    
+**6.4**
+  
+a) iii) Increasing lamda restricts the coefficients more, therefore RSS will steadily increase.
+    
+b) ii) Test RSS will decrease until its minimum point, and then start increasing steadily as the model gets more restricted.
+   
+c) iv) Variance decreases as the model becomes less flexible.
+   
+d) iii) Bias increases as the model becomes less flexible.
+  
+e) v) As previously, irreducible error is irreducible.
+    
+**6.6**
+   
+Here we will arbitrarily choose λ = 1, and y1 = 4. Thus we have:
+```{r}
+lamda <- 1
+beta <- seq(-20, 20, 0.1)
+y1 <- rep(4, length(beta))
+est <- (y1 - beta)^2 + lamda*(beta^2)
+data <- data.frame(beta, est)
+
+ggplot(data, aes(x = beta, y = est)) +
+  geom_point(alpha = .5, color = "blue") +
+  geom_hline(aes(yintercept = 4/(lamda + 1)), color = "red")
+```
+   
+And for the second part of the question:
+```{r}
+y1 <- rep(4, length(beta))
+est2 <- (y1 - beta)^2 + lamda*(abs(beta))
+data2 <- data.frame(beta, est2)
+
+ggplot(data2, aes(x = beta, y = est2)) +
+  geom_point(alpha = .5, color = "blue") +
+  geom_hline(aes(yintercept = 4 - lamda/2), color = "red")
+```
+
