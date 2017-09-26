@@ -67,3 +67,51 @@ ggplot(data2, aes(x = beta, y = est2)) +
 ```
 
 ![](ProbSet4_files/figure-markdown_github/unnamed-chunk-2-1.png)
+
+#### Crime Lasso/Ridge
+
+``` r
+attach(d)
+```
+
+    ## The following object is masked from package:tidyr:
+    ## 
+    ##     population
+
+``` r
+d <- d %>%
+  select(-1, -2, -3, -4, -(101:126))
+  
+  
+x <- model.matrix(ViolentCrimesPerPop~. , d)[,-1]
+y <- d$ViolentCrimesPerPop
+
+set.seed(14)
+cv.ridge <- cv.glmnet(x, y, alpha = 0)
+cv.lasso <- cv.glmnet(x, y, alpha = 1)
+
+ridge.mod <- glmnet(x, y, alpha = 0, lambda = cv.ridge$lambda.min, standardize = TRUE)
+lasso.mod <- glmnet(x, y, alpha = 1, lambda = cv.lasso$lambda.min, standardize = TRUE)
+
+#Question 1
+dim(coef(lasso.mod))
+```
+
+    ## [1] 97  1
+
+``` r
+#Question 2
+ridge.pred <- predict(ridge.mod, s = cv.ridge$lambda.min, newx = x)
+mean((ridge.pred - y)^2)
+```
+
+    ## [1] 0.01764507
+
+``` r
+lasso.pred <- predict(lasso.mod, s = cv.lasso$lambda.min, newx = x)
+mean((lasso.pred - y)^2)
+```
+
+    ## [1] 0.01693373
+
+The lasso MSE was slightly lower. This is surprising, because we would expect the ridge to outperform the lasso in variance, therefore having a lower training MSE. Maybe in this case it is because the true function f is a function of few of the predictors in the data, therefore making the lasso more accurate when setting them to zero.
