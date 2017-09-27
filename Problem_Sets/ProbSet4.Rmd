@@ -90,7 +90,7 @@ ridge.mod <- glmnet(x, y, alpha = 0, lambda = cv.ridge$lambda.min, standardize =
 lasso.mod <- glmnet(x, y, alpha = 1, lambda = cv.lasso$lambda.min, standardize = TRUE)
 
 #Question 1
-dim(coef(lasso.mod))
+length(coef(lasso.mod)[(coef(lasso.mod) != 0)])
 
 #Question 2
 ridge.pred <- predict(ridge.mod, s = cv.ridge$lambda.min, newx = x)
