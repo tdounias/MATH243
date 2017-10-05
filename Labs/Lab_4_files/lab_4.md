@@ -54,12 +54,10 @@ All predictors apart from dominance are statistically significant at the 5% leve
 
 ``` r
 #1
-
 cw_logit <- glm(start ~ exports + schooling + growth + peace + concentration + lnpop + fractionalization + exports_quad, family = binomial, data = war)
 
 ind_1975 <- war %>%
-  filter(country == "India", year == "1975") %>%
-  select(-(1:3))
+  filter(country == "India", year == "1975")
 
 predict(cw_logit, type = "response", ind_1975)
 ```
@@ -73,28 +71,30 @@ ind_1975[2] <- ind_1975[2] + 30
 predict(cw_logit, type = "response", ind_1975)
 ```
 
-    ##        1 
-    ## 0.201406
+    ##         1 
+    ## 0.3752647
 
 ``` r
 ind_1975 <- war %>%
-  filter(country == "India", year == "1975") %>%
-  select(-(1:3))
+  filter(country == "India", year == "1975") 
 
 ind_1975[1] <- ind_1975[1] + 0.1
+```
 
+    ## Warning in Ops.factor(left, right): '+' not meaningful for factors
+
+``` r
 predict(cw_logit, type = "response", ind_1975)
 ```
 
     ##         1 
-    ## 0.7850989
+    ## 0.3752647
 
 ``` r
 #2
 
 nig_1965 <- war %>%
-  filter(country == "Nigeria", year == "1965") %>%
-  select(-(1:3))
+  filter(country == "Nigeria", year == "1965")
 
 predict(cw_logit, type = "response", nig_1965)
 ```
@@ -108,21 +108,24 @@ nig_1965[2] <- nig_1965[2] + 30
 predict(cw_logit, type = "response", nig_1965)
 ```
 
-    ##          1 
-    ## 0.08777933
+    ##         1 
+    ## 0.1864533
 
 ``` r
 nig_1965 <- war %>%
-  filter(country == "Nigeria", year == "1965") %>%
-  select(-(1:3))
+  filter(country == "Nigeria", year == "1965") 
 
 nig_1965[1] <- nig_1965[1] + 0.1
+```
 
+    ## Warning in Ops.factor(left, right): '+' not meaningful for factors
+
+``` r
 predict(cw_logit, type = "response", nig_1965)
 ```
 
     ##         1 
-    ## 0.5822716
+    ## 0.1864533
 
 The difference in probabilities is not the same because we are dealing with log odds, not with a linear association. Therefore a change in a variable will not have the same effect ranging between two different observations. The function for getting a probability here is dependant on both the relative difference--here what we add to the observed values--and the prior state of the values of the observations.
 
@@ -165,3 +168,33 @@ count <- war %>%
 ```
 
     ## [1] 0.06686047
+
+**4**
+
+``` r
+#1
+cw_lda <- lda(start ~ exports + schooling + growth + peace + concentration + lnpop + fractionalization + dominance + exports_quad, data = war)
+
+lda_pred <- predict(cw_lda)
+
+conf_lda <- table(lda_pred$class, Civ_war$civ_war_Yes)
+
+(1/nrow(Civ_war)) * (conf_lda[2, 1] + conf_lda[1, 2])
+```
+
+    ## [1] 0.06686047
+
+``` r
+#2
+cw_qda <- lda(start ~ exports + schooling + growth + peace + concentration + lnpop + fractionalization + dominance + exports_quad, data = war)
+
+qda_pred <- predict(cw_qda)
+
+conf_qda <- table(qda_pred$class, Civ_war$civ_war_Yes)
+
+(1/nrow(Civ_war)) * (conf_qda[2, 1] + conf_qda[1, 2])
+```
+
+    ## [1] 0.06686047
+
+LDA and QDA perform similarly well, and Logistic Regression performs slightly less so. LDA and QDA performing in a similar fashion indicates that the data we have can be model so that our predictors share a covariance matrix, without incurring too much bias. There is no need to use a less parsimonious model such as QDA if LDA performs just as well (although bear in mind this is training, not test data). Logit performs worse than both of these because it entails calculating more parameters for each redictor, and is less stable than LDA when the data is approximatelly normaly distributed, which it seems to be here.
