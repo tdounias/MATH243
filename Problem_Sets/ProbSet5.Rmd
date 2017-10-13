@@ -1,0 +1,71 @@
+---
+title: "Problem Set 5--MATH 243"
+author: "Theodore Dounias"
+date: "October 13, 2017"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+####ISLR, Chapter 5, Excercises 4, 8
+   
+**4**
+   
+We can use Bootstraping for this process. We sample with replacement from or original dataset, creating a series of datasets of the same length from which we then proceed to make our prediction again. We summarize those predictions in a graph and dataset of their own, from which we then proceed to calculate the standard deviation. This is the standard deviation of our prediction.
+    
+    
+**8**
+   
+```{r}
+#1
+
+set.seed(14)
+y <- rnorm(100)
+x <- rnorm(100)
+
+y <- x - 2*x^2 + rnorm(100)
+
+#n is 100, p is equal to 2
+
+#2
+
+plot(x, y)
+
+#This sujests some form of quadratic relationship (which makes sense given how we generated the data)
+
+#3
+library(boot)
+set.seed(13)
+d <- data.frame(x, y)
+cv.error <- rep(0, 4)
+for(i in 1:4){
+  glm.fit <- glm(y~poly(x, i), data = d)
+  cv.error[i] <- cv.glm(d, glm.fit)$delta[1]
+}
+cv.error
+
+#4
+set.seed(14)
+d <- data.frame(x, y)
+cv.error <- rep(0, 4)
+for(i in 1:4){
+  glm.fit <- glm(y~poly(x, i), data = d)
+  cv.error[i] <- cv.glm(d, glm.fit)$delta[1]
+}
+cv.error
+
+#The results are identical. This happens because LOOCV is unaffected by this kind of sampling variability.
+
+
+#5
+#Interestingly enough, the cubic model outperforms the other two very slightly. This might be attributed to the random noise we #incorporated when generating our y's or most likely some coding error.
+
+#6
+
+summary(glm.fit)
+
+#Here we see more of what we expected; the terms up to the quadratic are statisticaly significant at the .05 level, with the cubic coming close--which we would expect based on the previous results we had.
+```
+
