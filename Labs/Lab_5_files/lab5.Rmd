@@ -10,6 +10,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 #Libraries
 library(tidyverse)
+library(boot)
 
 #Data
 d <- read.csv("http://andrewpbray.github.io/math-243/assets/data/stock_history.csv")
@@ -136,4 +137,15 @@ for(i in 1:1000){
 hist(boot_coef)
 abline(v=1,col="red")
 ```
+    
+```{r}
+confint(lm_invMAPE)[2, ]
+
+error <- qt(0.975,df=length(boot_coef) - 1)*sd(boot_coef)/sqrt(length(boot_coef))
+confint_pred <- c(mean(boot_coef) - error, mean(boot_coef) + error)
+confint_pred
+```
+   
+The confidence interval for the booststraped slope is significantly smaller because it reflects the confidence interval of the mean of the boostraped distribution, while confint is the interval for the beta_1 itself. 
+   
 
