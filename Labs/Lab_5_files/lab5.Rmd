@@ -1,0 +1,139 @@
+---
+title: "Lab 5 -- MATH 243"
+author: "Theodore Dounias"
+date: "October 17, 2017"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+#Libraries
+library(tidyverse)
+
+#Data
+d <- read.csv("http://andrewpbray.github.io/math-243/assets/data/stock_history.csv")
+attach(d)
+```
+   
+**1**
+
+```{r, warning=FALSE, error=FALSE}
+#a
+d <- d %>%
+  mutate(MAPE = Price/Earnings_10MA_back)
+
+summary(d[7])
+summary(d[4])
+
+d <- na.omit(d)
+
+attach(d)
+```
+   
+Here Earnings_10MA_back had 120 NA values which caused the same number of NA's in MAPE.
+    
+```{r}
+#b
+lm_MAPE <- lm(Return_10_fwd ~ MAPE, data = d)
+
+coef(summary(lm_MAPE))[2, -3]
+```
+   
+MAPE is significant in this model.
+   
+```{r}
+
+
+#c
+z<- (length(Price) +1)/5
+x <- rep(1, length(Price))
+x[z:(2*z)] <- 2 
+x[(2*z):(3*z)] <- 3
+x[(3*z):(4*z)] <- 4
+x[(4*z):(5*z - 1)] <- 5
+
+d <- d %>%
+  mutate(fold = x)
+mse <- rep(0, 5)
+
+for(i in 1:5){
+  d_train <- d %>%
+    filter(fold != i)
+  
+  d_test <- d %>%
+    filter(fold == i)
+  
+  lm_cv5 <- lm(Return_10_fwd ~ MAPE, data = d_train)
+  
+  mse[i] <- mean((d_test$Return_10_fwd - predict(lm_cv5, newdata = d_test))^2)
+}
+
+cv_mse <- .2 * sum(mse)
+cv_mse
+```
+    
+**2**
+     
+```{r, warning=FALSE, error=FALSE}
+#a
+d <- d %>%
+  mutate(inv_MAPE = 1/MAPE)
+attach(d)
+
+lm_invMAPE <- lm(Return_10_fwd ~ inv_MAPE, data = d)
+summary(lm_invMAPE)
+
+coef(summary(lm_invMAPE))[2, -3]
+
+```
+    
+Again, yes.
+    
+```{r}
+#b
+for(i in 1:5){
+  d_train <- d %>%
+    filter(fold != i)
+  
+  d_test <- d %>%
+    filter(fold == i)
+  
+  lm_cv5 <- lm(Return_10_fwd ~ inv_MAPE, data = d_train)
+  
+  mse[i] <- mean((d_test$Return_10_fwd - predict(lm_cv5, newdata = d_test))^2)
+}
+
+cv_mse <- .2 * sum(mse)
+cv_mse
+```
+   
+The MSE here is somewhat smaller than the MSE using the non-inverted model.
+    
+**3**
+    
+```{r}
+#a
+mse_3a <- mean((d$Return_10_fwd - d$inv_MAPE)^2)
+mse_3a
+```
+  
+We are essentially not training the model, but just assuming its form. Therefore the training MSE is an estimate of the test MSE in the same way that we would have when cross validating. 
+  
+**4**
+   
+```{r}
+#a
+boot.fn <- function(data, index){
+  return(coef(lm(Return_10_fwd ~ inv_MAPE, data = data, subset = index)))
+}
+
+boot_coef <- rep(0, 1000)
+for(i in 1:1000){
+  boot_coef[i] <- boot.fn(d, sample(1484, 1484, replace = TRUE))[2]
+}
+
+hist(boot_coef)
+abline(v=1,col="red")
+```
+
