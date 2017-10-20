@@ -148,4 +148,18 @@ confint_pred
    
 The confidence interval for the booststraped slope is significantly smaller because it reflects the confidence interval of the mean of the boostraped distribution, while confint is the interval for the beta_1 itself. 
    
+**5**
+   
+```{r}
+d %>% ggplot(aes(y = Return_10_fwd, x = MAPE)) +
+  geom_point(aes(y = Return_10_fwd, x = MAPE), alpha = .2, color = "blue") +
+  geom_smooth(method = lm, se = FALSE, color = "darkgreen", alpha = 3) +
+  geom_smooth(method= lm ,formula= y ~ I(1/x), se = FALSE, color = "red") +
+  geom_line(aes(y = inv_MAPE, x = MAPE), color = "brown")
+  
+```
+    
+**6**
+   
+
 
