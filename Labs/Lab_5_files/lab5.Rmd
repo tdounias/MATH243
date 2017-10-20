@@ -80,7 +80,6 @@ cv_mse
 #a
 d <- d %>%
   mutate(inv_MAPE = 1/MAPE)
-attach(d)
 
 lm_invMAPE <- lm(Return_10_fwd ~ inv_MAPE, data = d)
 summary(lm_invMAPE)
@@ -161,5 +160,8 @@ d %>% ggplot(aes(y = Return_10_fwd, x = MAPE)) +
     
 **6**
    
+a. Based on CV MSE we would choose the simplistic model. Looking at the plot, it looks like a competent model, or at least one that is no in any way worse than the other too. It does, however, seem to fail to clearly account for the high variance in the middle parts, and overshoots some observations near its tail. This prediction is strong in that it seems to be flexible and relativelly computationally non-intensive. However, it does seem like it might be susceptible to variance.
+   
+b. No. Given our data the simple-minded model's slope coefficient does not lie in our bootstrapped confidence interval.
 
 
