@@ -1,0 +1,77 @@
+---
+title: "Lab 6 -- MATH 243"
+author: "Theodore Dounias"
+date: "November 6, 2017"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyr)
+library(gbm)
+lettersdf <- read.csv("https://raw.githubusercontent.com/andrewpbray/math-243/master/assets/data/letters.csv",
+                      header = FALSE)
+set.seed(1)
+train <- sample(1:nrow(lettersdf), nrow(lettersdf) * .75)
+
+```
+  
+**Build a Boosted Tree**
+    
+```{r}
+boost.letters <- gbm(V1~., data = lettersdf[train,], distribution = "multinomial", n.trees = 50, 
+                     interaction.depth = 1, shrinkage = 0.1)
+
+summary(boost.letters)
+```
+   
+Variable V13 seems to be the most important variable.
+    
+**Assessing Predictions**
+   
+```{r}
+yhat.boost <- predict(boost.letters, newdata = lettersdf[-train, ], n.trees = 50)
+
+predicted <- LETTERS[apply(yhat.boost, 1, which.max)]
+
+lettersdf$V1[-train]
+
+#1
+conf_tb <- table(predicted, lettersdf$V1[-train])
+conf_tb
+
+#2
+mcr <- 1 - sum(diag(conf_tb))/5000
+mcr
+
+#3
+df_conf_pred <- data.frame(pred = predicted)
+df_conf_real <- data.frame(real = lettersdf$V1[-train])
+
+df_conf_pred <- df_conf_pred %>%
+  group_by(pred) %>%
+  summarize(N = n())
+  
+df_conf_real <- df_conf_real %>%
+  group_by(real) %>%
+  summarize(N = n())
+
+df_full <- inner_join(df_conf_pred, df_conf_real, by = c("pred" = "real"))
+
+df_full <- df_full %>%
+  mutate(rate = abs(N.x - N.y)/N.y)
+
+df_full[df_full$rate == max(df_full$rate), ]
+```
+   
+A note on problem 3. It is unclear here what being most difficult to predict means. I assumed that, out of the total number of each letter the method was presented with, the worse predicted would be that for which the frequency at which mistakes are made is higher. That is, the letter around which most error happens, which is not necessarily the same as being difficult to predict. B is also the letter for which the absolute number of errors made is highest, if we go with that interpretation.
+    
+
+4. In terms of letter pairs, BD, XE, EC seem to be particularly hard to discern. Also, several other letters in combination with B are hard as well, validating our previous claim about the letter B.
+    
+**Slow Learning**
+    
+```{r}
+
+```
+

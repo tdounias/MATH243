@@ -9,7 +9,9 @@ output: pdf_document
 knitr::opts_chunk$set(echo = TRUE)
 
 #Libraries
-library(tidyverse)
+library(tidyr)
+library(dplyr)
+library(ggplot2)
 library(boot)
 
 #Data
