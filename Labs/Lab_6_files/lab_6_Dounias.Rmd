@@ -9,12 +9,18 @@ output: pdf_document
 knitr::opts_chunk$set(echo = TRUE)
 library(tidyr)
 library(gbm)
+library(dplyr)
+library(randomForest)
 lettersdf <- read.csv("https://raw.githubusercontent.com/andrewpbray/math-243/master/assets/data/letters.csv",
                       header = FALSE)
 set.seed(1)
 train <- sample(1:nrow(lettersdf), nrow(lettersdf) * .75)
 
+crime_train <- read.csv("http://andrewpbray.github.io/data/crime-train.csv")
+crime_test  <- read.csv("https://www.dropbox.com/s/ac5uwzsed985lfv/crime-test.csv?dl=1")
 ```
+  
+####Ransom Notes Keep Falling
   
 **Build a Boosted Tree**
     
@@ -33,8 +39,6 @@ Variable V13 seems to be the most important variable.
 yhat.boost <- predict(boost.letters, newdata = lettersdf[-train, ], n.trees = 50)
 
 predicted <- LETTERS[apply(yhat.boost, 1, which.max)]
-
-lettersdf$V1[-train]
 
 #1
 conf_tb <- table(predicted, lettersdf$V1[-train])
@@ -72,6 +76,74 @@ A note on problem 3. It is unclear here what being most difficult to predict mea
 **Slow Learning**
     
 ```{r}
+boost.letters.slow <- gbm(V1~., data = lettersdf[train,], distribution = "multinomial", n.trees = 100, 
+                     interaction.depth = 1, shrinkage = 0.01)
 
+yhat.boost.slow <- predict(boost.letters.slow, newdata = lettersdf[-train, ], n.trees = 100)
+
+predicted.slow <- LETTERS[apply(yhat.boost.slow, 1, which.max)]
+
+conf_tb.slow <- table(predicted.slow, lettersdf$V1[-train])
+conf_tb.slow
+
+mcr.slow <- 1 - sum(diag(conf_tb.slow))/5000
+mcr.slow
 ```
+   
+Several letter pairs became much harder to predict, including RB, BS, ND, NV, OH and many others. This does not seem to have solved many issues relating to the previous pairs, and as the mcr shows is a much worse model. This is probably because we do not have a high enough B to compensate for a lamda that is ten times smaller.
+    
+####Communities and Crime
+   
+**Growing a Random Forest**
+   
+```{r}
+crime_test <- crime_test %>%
+  select(-(1:4), -(101:126))
+
+crime_train <- crime_train %>%
+  select(-(1:4), -(101:126))
+
+bag.crimes <- randomForest(ViolentCrimesPerPop~., data = crime_train, mtry = 96, importance = TRUE)
+
+yhat.bag <- predict(bag.crimes, newdata = crime_test) 
+
+mse.bag <- mean((yhat.bag - crime_test$ViolentCrimesPerPop)^2)
+
+mse.bag
+
+rforest.crimes <- randomForest(ViolentCrimesPerPop~., data = crime_train, importance = TRUE)
+
+yhat.rforest <- predict(rforest.crimes, newdata = crime_test) 
+
+mse.rforest <- mean((yhat.rforest - crime_test$ViolentCrimesPerPop)^2)
+
+mse.rforest
+```
+   
+The random forest test MSE is lower than that of the simple bagging method, which was to be expected. Both are lower than the test MSE that our group had.
+   
+**Variance Importance**
+   
+```{r}
+#I will construct this only for the more efficient model, which is the random forest
+
+varImpPlot(rforest.crimes)
+```
+   
+With this relativelly more interpretable plot, it seems like the best variables to use are the percentage of undocumented individuals, the percentage of children with two parents, the percentage of families with two parents, the percentage of white individuals, and the number of undocumented individuals. These are all variables that where included in our model, maybe perhaps without some redundancies that, at least here, seem important to the model.
+    
+**One Last Boost**
+   
+```{r}
+boost.crime <- gbm(ViolentCrimesPerPop~., data = crime_train, distribution = "gaussian", 
+                   n.trees = 5000, interaction.depth = 1, shrinkage = 0.01)
+
+yhat.boost.crime <- predict(boost.crime, newdata = crime_test, n.trees = 1000)
+
+mse.boost <- mean((yhat.boost.crime - crime_test$ViolentCrimesPerPop)^2)
+
+mse.boost
+```
+   
+The MSE here is better than in all previous models.
 
