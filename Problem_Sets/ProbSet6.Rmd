@@ -1,0 +1,105 @@
+---
+title: "ProbSet 6?"
+author: "Theodore Dounias"
+date: "November 9, 2017"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(dplyr)
+library(tidyr)
+library(ggplot2)
+
+d <- read.csv("http://andrewpbray.github.io/math-243/assets/data/handwritten.csv")
+
+plot_letter <- function(x, hasletter = TRUE) {
+  if(hasletter) {
+    a <- as.numeric(x[, -1])
+  }else{a <- as.numeric(x)}
+  m <- matrix(a, nrow = 8, byrow = TRUE)
+  m <- t(apply(m, 2, rev)) # rotate matrix
+  par(mar = rep(0, 4))
+  image(m, axes = FALSE, col = rev(grey(seq(0, 1, length = 256)))) #this should be a divergent palette
+  box()
+}
+
+pc_grid <- function(pca, data) {
+  d <- data
+  grid_points <- as.matrix(expand.grid(seq(-1.5, 1.5, length.out = 5), 
+                                       seq(-1.5, 1.5, length.out = 5)))
+  pc_points <- pca$x[, 1:2]
+  nearest_ind <- rep(NA, nrow(grid_points))
+  for(i in 1:nrow(grid_points)) {
+    gp <- matrix(rep(grid_points[i, ], nrow(pc_points)), 
+                 ncol = 2, byrow = TRUE)
+    nearest_ind[i] <- which.min(rowSums((pc_points - gp)^2))
+  }
+  nearest_grid <- data.frame(d[nearest_ind, ])
+  par(mfrow = c(5, 5))
+  regrid <- c(21:25, 16:20, 11:15, 6:10, 1:5)
+  for(i in regrid) {
+    plot_letter(nearest_grid[i, ])
+  }
+}
+```
+    
+**1**
+
+Each row is a different hand-written letter, and each column represents a square in a 8*8 matrix.
+   
+**2-4**
+```{r}
+d.x <- d %>%
+  filter(letter == "x")
+
+plot_letter(d.x[12, ])
+
+g_mean <- colSums(d.x[, -1])/nrow(d.x)
+plot_letter(g_mean, hasletter = FALSE)
+```
+  
+**5**  
+```{r}
+pca1 <- prcomp(d.x[, -1])
+```
+   
+**6**
+```{r}
+scree <- data.frame(PC = 1:20,
+                PVE = pca1$sdev[1:20]^2 / sum(pca1$sdev[1:20]^2))
+ggplot(scree, aes(x = PC, y = PVE)) +
+  geom_line() + 
+  geom_point()
+```
+Around 13.
+    
+**7**
+```{r}
+d.v <- d %>%
+  filter(letter == "v")
+
+pca2 <- prcomp(d.v[, -1])
+
+scree <- data.frame(PC = 1:20,
+                PVE = pca2$sdev[1:20]^2 / sum(pca2$sdev[1:20]^2))
+ggplot(scree, aes(x = PC, y = PVE)) +
+  geom_line() + 
+  geom_point()
+```
+Around 15.
+   
+**8**
+```{r}
+data <- as.data.frame(pca1$x)
+p1 <- ggplot(data, aes(x = PC1, y = PC2)) +
+  geom_point()
+p1
+```
+**9**
+```{r}
+pc_grid(pca1, d.x)
+```
+
+PCA2 appears to be dispertion on the y-axis. PCA1 is harder to interpret. One explanation could be that the center of mass of the object pictured each time seems to be shifting slightly from left to right.
