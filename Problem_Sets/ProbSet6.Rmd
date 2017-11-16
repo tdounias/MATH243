@@ -103,3 +103,27 @@ pc_grid(pca1, d.x)
 ```
 
 PCA2 appears to be dispertion on the y-axis. PCA1 is harder to interpret. One explanation could be that the center of mass of the object pictured each time seems to be shifting slightly from left to right.
+   
+**9**
+```{r}
+plot_letter(pca1$rotation[, 1], hasletter = FALSE)
+```
+   
+**10**
+```{r}
+g_mean <- colMeans(d.x[ , -1])
+phi <- pca1$rotation
+z <- pca1$x
+ncomp <- 10
+x_star1 <- z[1, 1:ncomp] %*% t(phi[, 1:ncomp]) + g_mean
+x_star2 <- z[2, 1:ncomp] %*% t(phi[, 1:ncomp]) + g_mean
+
+par(mfrow = c(2, 2))
+par(mfrow = c(2, 2), mar = rep(0, 4))
+plot_letter(x_star1, hasletter = FALSE)
+plot_letter(d.x[1,], hasletter = TRUE)
+plot_letter(x_star2, hasletter = FALSE)
+plot_letter(d.x[2,], hasletter = TRUE)
+```
+   
+Not much information was lost; there is a strong resemblance between the two letters.
